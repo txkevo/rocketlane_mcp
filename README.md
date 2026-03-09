@@ -1,6 +1,7 @@
 # Rocketlane MCP Server
 
 A TypeScript [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that exposes the full [Rocketlane REST API](https://docs.rocketlane.com) as LLM-callable tools.
+**Disclaimer:** This project is a proof of concept and is not affiliated or endorsed by the team at [Rocketlane](https://www.rocket.ane.com). Use at your own risk.
 
 ## Features
 
