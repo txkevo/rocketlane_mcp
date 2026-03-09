@@ -4,7 +4,7 @@ A TypeScript [Model Context Protocol (MCP)](https://modelcontextprotocol.io) ser
 
 **Disclaimers:** 
 
-- This project is a proof of concept and is not affiliated or endorsed by the team at [Rocketlane](https://www.rocket.ane.com). See [DISCLAIMERS.md](./DISCLAIMERS.md) before use.
+- This project is a proof of concept and is not affiliated or endorsed by the team at [Rocketlane](https://www.rocketlane.com). See [DISCLAIMERS.md](./DISCLAIMERS.md) before use.
 - This project is distributed under the **MIT License**.
 - This project comes with no support.
 
