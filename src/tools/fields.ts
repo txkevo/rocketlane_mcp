@@ -127,25 +127,4 @@ export function registerFieldTools(server: McpServer, client: RocketlaneClient) 
     }
   );
 
-  // Remove field options
-  server.registerTool(
-    "rocketlane_remove_field_options",
-    {
-      title: "Remove Field Options",
-      description: "Remove options from a DROPDOWN or MULTI_SELECT custom field.",
-      inputSchema: {
-        fieldId: z.number().int().describe("Field ID"),
-        optionIds: z.array(z.number().int()).describe("Option IDs to remove"),
-      },
-      annotations: { readOnlyHint: false, destructiveHint: true },
-    },
-    async ({ fieldId, optionIds }) => {
-      // NOTE: No documented remove-option endpoint found in Rocketlane API docs.
-      // This endpoint is unconfirmed — test live and update if it fails.
-      await client.delete(`/fields/${fieldId}/options`, {
-        options: optionIds.map((optionId) => ({ optionId })),
-      });
-      return { content: [{ type: "text", text: `Options removed from field ${fieldId}.` }] };
-    }
-  );
 }
