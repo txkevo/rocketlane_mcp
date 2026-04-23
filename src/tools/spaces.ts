@@ -51,8 +51,8 @@ export function registerSpaceTools(server: McpServer, client: RocketlaneClient) 
       },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async (params) => {
-      const result = await client.post("/spaces", params);
+    async ({ projectId, ...rest }) => {
+      const result = await client.post("/spaces", { ...rest, project: { projectId } });
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
   );

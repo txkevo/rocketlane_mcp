@@ -70,11 +70,12 @@ export function registerTimeTrackingTools(server: McpServer, client: RocketlaneC
       },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async ({ userId, taskId, projectId, ...rest }) => {
+    async ({ userId, taskId, projectId, categoryId, ...rest }) => {
       const body: Record<string, unknown> = { ...rest };
       body.user = { userId };
       if (taskId !== undefined) body.task = { taskId };
       if (projectId !== undefined) body.project = { projectId };
+      if (categoryId !== undefined) body.category = { categoryId };
       const result = await client.post("/time-entries", body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
