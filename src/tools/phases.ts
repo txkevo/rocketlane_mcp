@@ -56,8 +56,8 @@ export function registerPhaseTools(server: McpServer, client: RocketlaneClient) 
       },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async (params) => {
-      const result = await client.post("/phases", params);
+    async ({ projectId, ...body }) => {
+      const result = await client.post("/phases", { ...body, project: { projectId } });
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
   );

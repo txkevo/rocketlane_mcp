@@ -76,8 +76,13 @@ export function registerTaskTools(server: McpServer, client: RocketlaneClient) {
       },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async (params) => {
-      const result = await client.post("/tasks", params);
+    async ({ projectId, phaseId, description, estimatedMinutes, ...rest }) => {
+      const body: Record<string, unknown> = { ...rest };
+      if (projectId !== undefined) body.project = { projectId };
+      if (phaseId !== undefined) body.phase = { phaseId };
+      if (description !== undefined) body.taskDescription = description;
+      if (estimatedMinutes !== undefined) body.effortInMinutes = estimatedMinutes;
+      const result = await client.post("/tasks", body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
   );
@@ -216,7 +221,7 @@ export function registerTaskTools(server: McpServer, client: RocketlaneClient) {
       annotations: { readOnlyHint: false },
     },
     async ({ taskId, dependencyTaskIds }) => {
-      const result = await client.post(`/tasks/${taskId}/dependencies`, {
+      const result = await client.post(`/tasks/${taskId}/add-dependencies`, {
         dependencies: dependencyTaskIds.map((id) => ({ taskId: id })),
       });
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };

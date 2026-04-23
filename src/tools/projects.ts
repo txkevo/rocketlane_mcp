@@ -70,8 +70,11 @@ export function registerProjectTools(server: McpServer, client: RocketlaneClient
       },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async (params) => {
-      const result = await client.post("/projects", params);
+    async ({ ownerId, companyId, ...rest }) => {
+      const body: Record<string, unknown> = { ...rest };
+      if (ownerId !== undefined) body.owner = { userId: ownerId };
+      if (companyId !== undefined) body.customer = { companyId };
+      const result = await client.post("/projects", body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
   );
