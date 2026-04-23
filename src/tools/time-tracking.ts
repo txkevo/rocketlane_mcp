@@ -97,7 +97,9 @@ export function registerTimeTrackingTools(server: McpServer, client: RocketlaneC
       },
       annotations: { readOnlyHint: false, idempotentHint: true },
     },
-    async ({ timeEntryId, ...body }) => {
+    async ({ timeEntryId, categoryId, ...rest }) => {
+      const body: Record<string, unknown> = { ...rest };
+      if (categoryId !== undefined) body.category = { categoryId };
       const result = await client.put(`/time-entries/${timeEntryId}`, body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
@@ -117,25 +119,6 @@ export function registerTimeTrackingTools(server: McpServer, client: RocketlaneC
     async ({ timeEntryId }) => {
       await client.delete(`/time-entries/${timeEntryId}`);
       return { content: [{ type: "text", text: `Time entry ${timeEntryId} deleted successfully.` }] };
-    }
-  );
-
-  // Search time entries
-  server.registerTool(
-    "rocketlane_search_time_entries",
-    {
-      title: "Search Time Entries (Advanced)",
-      description: "Advanced search for time entries using POST body filters.",
-      inputSchema: {
-        filters: z.record(z.unknown()).optional().describe("Filter object with field.operator keys"),
-        pageSize: z.number().int().optional(),
-        pageToken: z.string().optional(),
-      },
-      annotations: { readOnlyHint: true },
-    },
-    async (params) => {
-      const result = await client.get("/time-entries/search", params);
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
   );
 
