@@ -49,14 +49,17 @@ export function registerFieldTools(server: McpServer, client: RocketlaneClient) 
         fieldType: z.enum(["TEXT", "MULTI_LINE_TEXT", "YES_OR_NO", "DATE", "SINGLE_CHOICE", "MULTIPLE_CHOICE", "SINGLE_USER", "MULTIPLE_USER", "NUMBER", "NOTE", "RATING"]).describe("Field type"),
         objectType: z.enum(["TASK", "PROJECT", "USER"]).describe("Object type this field applies to"),
         required: z.boolean().optional().describe("Whether the field is required"),
-        options: z.array(z.string()).optional().describe("Options for DROPDOWN or MULTI_SELECT types"),
+        options: z.array(z.object({
+          optionLabel: z.string().describe("Option display label"),
+          optionColor: z.enum(["RED", "YELLOW", "GREEN", "TEAL", "CYAN", "BLUE", "PURPLE", "MAGENTA", "GRAY", "COOL_GRAY"]).describe("Option color"),
+        })).optional().describe("Options for SINGLE_CHOICE or MULTIPLE_CHOICE types"),
       },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
     async ({ options, ...rest }) => {
       const body: Record<string, unknown> = { ...rest };
       if (options) {
-        body.options = options.map((o) => ({ label: o }));
+        body.options = options;
       }
       const result = await client.post("/fields", body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -104,18 +107,23 @@ export function registerFieldTools(server: McpServer, client: RocketlaneClient) 
     "rocketlane_add_field_options",
     {
       title: "Add Field Options",
-      description: "Add options to a DROPDOWN or MULTI_SELECT custom field.",
+      description: "Add one or more options to a SINGLE_CHOICE or MULTIPLE_CHOICE custom field. Each option requires a label and a color.",
       inputSchema: {
         fieldId: z.number().int().describe("Field ID"),
-        options: z.array(z.string()).describe("Option labels to add"),
+        options: z.array(z.object({
+          optionLabel: z.string().describe("Option display label"),
+          optionColor: z.enum(["RED", "YELLOW", "GREEN", "TEAL", "CYAN", "BLUE", "PURPLE", "MAGENTA", "GRAY", "COOL_GRAY"]).describe("Option color"),
+        })).describe("Options to add"),
       },
       annotations: { readOnlyHint: false },
     },
     async ({ fieldId, options }) => {
-      const result = await client.post(`/fields/${fieldId}/options`, {
-        options: options.map((o) => ({ label: o })),
-      });
-      return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      const results = [];
+      for (const option of options) {
+        const result = await client.post(`/fields/${fieldId}/add-option`, option);
+        results.push(result);
+      }
+      return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
     }
   );
 
@@ -132,6 +140,8 @@ export function registerFieldTools(server: McpServer, client: RocketlaneClient) 
       annotations: { readOnlyHint: false, destructiveHint: true },
     },
     async ({ fieldId, optionIds }) => {
+      // NOTE: No documented remove-option endpoint found in Rocketlane API docs.
+      // This endpoint is unconfirmed — test live and update if it fails.
       await client.delete(`/fields/${fieldId}/options`, {
         options: optionIds.map((optionId) => ({ optionId })),
       });
