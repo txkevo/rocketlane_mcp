@@ -105,7 +105,10 @@ export function registerTaskTools(server: McpServer, client: RocketlaneClient) {
       },
       annotations: { readOnlyHint: false, idempotentHint: true },
     },
-    async ({ taskId, ...body }) => {
+    async ({ taskId, description, estimatedMinutes, ...rest }) => {
+      const body: Record<string, unknown> = { ...rest };
+      if (description !== undefined) body.taskDescription = description;
+      if (estimatedMinutes !== undefined) body.effortInMinutes = estimatedMinutes;
       const result = await client.put(`/tasks/${taskId}`, body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }

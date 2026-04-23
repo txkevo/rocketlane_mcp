@@ -46,8 +46,8 @@ export function registerFieldTools(server: McpServer, client: RocketlaneClient) 
       description: "Create a new custom field for tasks, projects, or invoices.",
       inputSchema: {
         fieldLabel: z.string().describe("Display label for the field"),
-        fieldType: z.enum(["TEXT", "NUMBER", "DATE", "DROPDOWN", "MULTI_SELECT", "CHECKBOX", "URL"]).describe("Field type"),
-        entityType: z.enum(["TASK", "PROJECT", "INVOICE"]).describe("Entity this field applies to"),
+        fieldType: z.enum(["TEXT", "MULTI_LINE_TEXT", "YES_OR_NO", "DATE", "SINGLE_CHOICE", "MULTIPLE_CHOICE", "SINGLE_USER", "MULTIPLE_USER", "NUMBER", "NOTE", "RATING"]).describe("Field type"),
+        objectType: z.enum(["TASK", "PROJECT", "USER"]).describe("Object type this field applies to"),
         required: z.boolean().optional().describe("Whether the field is required"),
         options: z.array(z.string()).optional().describe("Options for DROPDOWN or MULTI_SELECT types"),
       },

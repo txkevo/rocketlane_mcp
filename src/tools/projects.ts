@@ -97,7 +97,10 @@ export function registerProjectTools(server: McpServer, client: RocketlaneClient
       },
       annotations: { readOnlyHint: false, idempotentHint: true },
     },
-    async ({ projectId, ...body }) => {
+    async ({ projectId, ownerId, companyId, ...rest }) => {
+      const body: Record<string, unknown> = { ...rest };
+      if (ownerId !== undefined) body.owner = { userId: ownerId };
+      if (companyId !== undefined) body.customer = { companyId };
       const result = await client.put(`/projects/${projectId}`, body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }

@@ -70,8 +70,12 @@ export function registerTimeTrackingTools(server: McpServer, client: RocketlaneC
       },
       annotations: { readOnlyHint: false, destructiveHint: false },
     },
-    async (params) => {
-      const result = await client.post("/time-entries", params);
+    async ({ userId, taskId, projectId, ...rest }) => {
+      const body: Record<string, unknown> = { ...rest };
+      body.user = { userId };
+      if (taskId !== undefined) body.task = { taskId };
+      if (projectId !== undefined) body.project = { projectId };
+      const result = await client.post("/time-entries", body);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
   );
@@ -129,7 +133,7 @@ export function registerTimeTrackingTools(server: McpServer, client: RocketlaneC
       annotations: { readOnlyHint: true },
     },
     async (params) => {
-      const result = await client.post("/time-entries/search", params);
+      const result = await client.get("/time-entries/search", params);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
     }
   );
